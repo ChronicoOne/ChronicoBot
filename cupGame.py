@@ -11,6 +11,11 @@ class CupGame(sg.Game):
         print("Drawing")
 
     def update(self):
+        currentOutput = self.getInput()
+        while(currentOutput != None):
+            if list(currentOutput.values())[0] == "end":
+                self.running = False
+            currentOutput = self.console.getOutput()
         return self.running
 
     

@@ -16,6 +16,9 @@ class ActionQ:
     def pop(self):
         return self.queue.pop()
 
+    def isEmpty(self):
+        return len(self.queue) == 0
+
 class ChroniConsole:
     def __init__(self, size=screen_size):
         self.display = self.init_game_surface(size)
@@ -42,7 +45,7 @@ class ChroniConsole:
         self.display.fill(background_color)
         pygame.display.flip()
         self.game = GameClass(self)
-        print(f"Inserted {self.game.title} into the ChroniConsole")
+        print(f"Inserted \"{self.game.title}\" into the ChroniConsole")
 
     def eject(self):
         if self.game == None:
@@ -57,7 +60,7 @@ class ChroniConsole:
         self.game = None
         self.display.fill(background_color)
         pygame.display.flip()
-        print(f"Ejected {ejected_name} from the ChroniConsole")    
+        print(f"Ejected \"{ejected_name}\" from the ChroniConsole")    
     
     async def play(self):
         while(await self.update()):
@@ -84,7 +87,9 @@ class ChroniConsole:
         self.inputQ.push(action)
         print(self.inputQ.queue)
 
-    def getOutput(self, action):
+    def getOutput(self):
+        if self.outputQ.isEmpty():
+            return None
         return self.outputQ.pop()
 
 class Game:
@@ -97,8 +102,10 @@ class Game:
         return self.running
     
     def getInput(self):
+        if self.console.inputQ.isEmpty():
+            return None
         return self.console.inputQ.pop()
 
     def pushOutput(self, action):
-        self.outputQ.push(action)
+        self.console.outputQ.push(action)
          
