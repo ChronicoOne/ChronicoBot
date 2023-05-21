@@ -85,7 +85,6 @@ class ChroniConsole:
 
     def pushInput(self, action):
         self.inputQ.push(action)
-        print(self.inputQ.queue)
 
     def getOutput(self):
         if self.outputQ.isEmpty():
