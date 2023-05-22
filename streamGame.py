@@ -21,6 +21,7 @@ class ActionQ:
 
 class ChroniConsole:
     def __init__(self, size=screen_size):
+        self.background_color = background_color
         self.display = self.init_game_surface(size)
         self.game = None
         self.inputQ = ActionQ()
@@ -31,7 +32,7 @@ class ChroniConsole:
 
         display = pygame.display.set_mode(size=size)
 
-        display.fill(background_color)
+        display.fill(self.background_color)
         
         pygame.display.flip()
 
@@ -42,7 +43,7 @@ class ChroniConsole:
             print("ERROR: Cannot insert game into ChroniConsole! A game is already inserted...")
             return -1
 
-        self.display.fill(background_color)
+        self.display.fill(self.background_color)
         pygame.display.flip()
         self.game = GameClass(self)
         print(f"Inserted \"{self.game.title}\" into the ChroniConsole")
@@ -58,7 +59,7 @@ class ChroniConsole:
 
         ejected_name = self.game.title
         self.game = None
-        self.display.fill(background_color)
+        self.display.fill(self.background_color)
         pygame.display.flip()
         print(f"Ejected \"{ejected_name}\" from the ChroniConsole")    
     
