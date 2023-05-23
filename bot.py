@@ -16,7 +16,7 @@ class ChronicoBot(commands.Bot):
     def __init__(self):
         # Initialise our Bot with our access token, prefix and a list of channels to join on boot...
         super().__init__(token=access_token, prefix='?', initial_channels=['Chronico1'])
-        self.console = ChroniConsole(console_size)
+        self.console = ChroniConsole(None, console_size)
 
 
     async def event_ready(self):
@@ -36,20 +36,21 @@ class ChronicoBot(commands.Bot):
     @commands.command()
     async def cups(self, ctx: commands.Context):
         self.console.eject()
-        self.console.insert(CupGame)
+        self.console.insert(CupGame, ctx)
         await self.console.run()
+        await self.announce_cups_wins(ctx)
         self.console.eject()
+
+    async def announce_cups_wins(self, ctx):
+        winners = self.console.getOutput()
+        await ctx.send(f"Congrats to {winners} for winning Cups!")
+        return 1 
 
     @commands.command()
     async def vote(self, ctx: commands.Context, arg=""):
         self.console.pushInput({ctx.author.name: arg})
-        
-    async def announce_winners(self):
-        if self.game_playing:
-            for voter in self.votes:
-                if self.votes[voter] == str(self.winner):
-                    await self.ctx.send(f"Congrats! @{voter} has won {self.console.game.title}!")
-                
+         
+
 
 bot = ChronicoBot()
 

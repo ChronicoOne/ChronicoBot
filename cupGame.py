@@ -1,7 +1,18 @@
 import streamGame as sg
+from twitchio.ext import commands
 import pygame 
 from time import sleep
 from random import randrange
+
+class Ball:
+    def __init__(self, posX):
+        self.posX = posX
+        self.color = (200, 0, 200)
+        self.radius = 20
+        self.visible = True
+
+    def draw(self, display):
+        pygame.draw.circle(display, self.color, (self.posX, 250), self.radius)
 
 class Cup:
     def __init__(self, ID):
@@ -10,7 +21,8 @@ class Cup:
         self.ID = ID
         self.lastID = ID
         self.posX = ID * 125 
-        self.posY = 250
+        self.posY = 100
+        self.ball = None
 
     def place(self, x, y):
         self.posX = x
@@ -30,21 +42,49 @@ class CupGame(sg.Game):
         super().__init__(console, 'Cups')
         self.votes = {}
         self.cups = [Cup(1), Cup(2), Cup(3)]
+        self.winnerCup = None
+        self.ball = Ball(250)
         self.speed = 5
+        self.maxSpeed = 16
+        self.countDown = 700
         self.swapping = False
+        self.revealing = False
+        self.ending = False
+        self.reset()
 
     def draw(self):
         self.console.display.fill(self.console.background_color)
-        print("Cups:", [cup.ID for cup in self.cups])
+        
+        if self.ball.visible:
+            self.ball.draw(self.console.display)
+
         for cup in self.cups:
             cup.draw(self.console.display)
+
         pygame.display.flip()
     
     def update(self):
-        if not self.swapping:
-            self.swap()
         self.processInput()
-        self.moveCups()
+
+        if self.revealing and not self.swapping:
+            self.moveCups(100)
+        elif not self.ending:
+            if not (self.swapping or self.ball.visible):
+                self.swap()
+            self.increaseSpeed(0.025)
+            self.moveCups(250)
+        
+        if self.speed >= self.maxSpeed and (not self.swapping):
+            self.ending = True
+        
+        if self.ending:
+            if self.countDown <= 0:
+                self.pushWinners()
+                self.ball.visible = True
+                self.revealing = True
+            else:
+                self.countDown -= 1
+
         return self.running
     
     def processInput(self):
@@ -56,6 +96,17 @@ class CupGame(sg.Game):
 
     def increaseSpeed(self, amount):
         self.speed += amount
+    
+    def reset(self):
+        self.speed = 5
+        self.cups = [Cup(1), Cup(2), Cup(3)]
+        self.winnerCup = self.cups[randrange(3)]
+        self.ball.posX = self.winnerCup.posX
+        self.votes = {}
+        self.countDown = 700
+        self.revealing = False
+        self.swapping = False
+        self.ending = False
 
     def swap(self):
         self.swapping = True
@@ -73,7 +124,25 @@ class CupGame(sg.Game):
                 cup.lastID = cup.ID
                 cup.ID = firstCupID
     
-    def moveCups(self):
+    def checkVotes(self):
+        
+        self.swapping = False
+        winners = []
+
+        for user in self.votes:
+            if self.votes[user] == str(self.winnerCup.ID):
+                winners.append("@" + user) 
+        
+        return winners
+
+    def pushWinners(self):
+        winners = self.checkVotes()
+
+        winnerString = ", ".join(winners)
+
+        self.pushOutput(winnerString)
+
+    def moveCups(self, returnY):
         for cup in self.cups:
             if cup.lastID != cup.ID:
                 movingLeft = cup.ID < cup.lastID
@@ -94,7 +163,19 @@ class CupGame(sg.Game):
                 
                 if abs(cup.posX - targetX) <= self.speed:
                     cup.posX = targetX
-                    cup.posY = 250
+                    cup.posY = returnY
                     cup.lastID = cup.ID
                     self.swapping = False
-                
+            
+            elif abs(cup.posY - returnY) <= 3:
+                cup.posY = returnY
+                if self.revealing:
+                    self.running = False
+                else:
+                    self.ball.visible = False
+
+            elif cup.posY > returnY and not self.swapping:
+                cup.posY -= 2
+            elif cup.posY < returnY and not self.swapping:
+                cup.posY += 2 
+

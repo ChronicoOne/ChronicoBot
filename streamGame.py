@@ -1,6 +1,7 @@
 import pygame
 from time import sleep
 import asyncio
+from twitchio.ext import commands 
 
 screen_size = (500, 500)
 background_color = (0, 255, 0)
@@ -15,15 +16,19 @@ class ActionQ:
 
     def pop(self):
         return self.queue.pop()
+    
+    def clear(self):
+        self.queue = []
 
     def isEmpty(self):
         return len(self.queue) == 0
 
 class ChroniConsole:
-    def __init__(self, size=screen_size):
+    def __init__(self, ctx, size=screen_size):
         self.background_color = background_color
         self.display = self.init_game_surface(size)
         self.game = None
+        self.ctx = ctx
         self.inputQ = ActionQ()
         self.outputQ = ActionQ()
         
@@ -38,7 +43,7 @@ class ChroniConsole:
 
         return display
 
-    def insert(self, GameClass):
+    def insert(self, GameClass, ctx):
         if self.game != None:
             print("ERROR: Cannot insert game into ChroniConsole! A game is already inserted...")
             return -1
@@ -46,6 +51,7 @@ class ChroniConsole:
         self.display.fill(self.background_color)
         pygame.display.flip()
         self.game = GameClass(self)
+        self.ctx = ctx
         print(f"Inserted \"{self.game.title}\" into the ChroniConsole")
 
     def eject(self):
@@ -61,6 +67,9 @@ class ChroniConsole:
         self.game = None
         self.display.fill(self.background_color)
         pygame.display.flip()
+        self.inputQ.clear()
+        self.outputQ.clear()
+
         print(f"Ejected \"{ejected_name}\" from the ChroniConsole")    
     
     async def play(self):
