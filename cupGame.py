@@ -1,5 +1,4 @@
 import streamGame as sg
-from twitchio.ext import commands
 import pygame 
 from time import sleep
 from random import randrange
@@ -63,7 +62,7 @@ class CupGame(sg.Game):
 
         pygame.display.flip()
     
-    def update(self):
+    async def update(self):
         self.processInput()
 
         if self.revealing and not self.swapping:
@@ -74,14 +73,17 @@ class CupGame(sg.Game):
             self.increaseSpeed(0.025)
             self.moveCups(250)
         
-        if self.speed >= self.maxSpeed and (not self.swapping):
+        if self.speed >= self.maxSpeed and not(self.swapping or self.ending):
             self.ending = True
-        
+            await self.console.ctx.send("Vote for which cup contains the ball! | ?vote (1, 2, or 3)")
+
         if self.ending:
-            if self.countDown <= 0:
-                self.pushWinners()
+            if self.countDown == 0:
+                await self.announceWinners()
                 self.ball.visible = True
+                self.ball.posX = self.winnerCup.posX
                 self.revealing = True
+                self.countDown -= 1
             else:
                 self.countDown -= 1
 
@@ -124,7 +126,7 @@ class CupGame(sg.Game):
                 cup.lastID = cup.ID
                 cup.ID = firstCupID
     
-    def checkVotes(self):
+    def getWinners(self):
         
         self.swapping = False
         winners = []
@@ -135,12 +137,15 @@ class CupGame(sg.Game):
         
         return winners
 
-    def pushWinners(self):
-        winners = self.checkVotes()
-
+    async def announceWinners(self):
+        winners = self.getWinners()
         winnerString = ", ".join(winners)
+        if len(winners) > 0:
+            await self.console.ctx.send(f"Congrats to {winnerString} for winning Cups!")
+        else:
+            await self.console.ctx.send("Cups game ended with no winners!")
+        return 1 
 
-        self.pushOutput(winnerString)
 
     def moveCups(self, returnY):
         for cup in self.cups:
@@ -175,7 +180,7 @@ class CupGame(sg.Game):
                     self.ball.visible = False
 
             elif cup.posY > returnY and not self.swapping:
-                cup.posY -= 2
+                cup.posY -= 1
             elif cup.posY < returnY and not self.swapping:
-                cup.posY += 2 
+                cup.posY += 1 
 
