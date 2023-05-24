@@ -18,7 +18,6 @@ class ChronicoBot(commands.Bot):
         super().__init__(token=access_token, prefix='?', initial_channels=['Chronico1'])
         self.console = ChroniConsole(1, None, console_size)
 
-
     async def event_ready(self):
         # We are logged in and ready to chat and use commands...
         print(f'Logged in as | {self.nick}')
