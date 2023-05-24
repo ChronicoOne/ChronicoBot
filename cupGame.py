@@ -1,7 +1,6 @@
 import streamGame as sg
 from userData import User
 import pygame 
-from time import sleep
 from random import randrange
 
 class Ball:
@@ -134,9 +133,11 @@ class CupGame(sg.Game):
         winners = []
 
         for user in self.votes:
-            if self.votes[user] == str(self.winnerCup.ID):
-                winners.append(user) 
-        
+            vote = self.votes[user]
+            if vote.isnumeric():
+                if int(vote) == self.winnerCup.ID:
+                    winners.append(user) 
+
         return winners
 
     async def announceWinners(self):

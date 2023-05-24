@@ -9,6 +9,7 @@ from streamGame import ChroniConsole
 import asyncio
 
 from cupGame import CupGame
+from duelGame import DuelGame
 
 console_size = (500, 500)
 
@@ -46,13 +47,12 @@ class ChronicoBot(commands.Bot):
         await self.console.run()
         self.console.eject()
 
-    async def announce_cups_wins(self, ctx):
-        winners = self.console.getOutput()
-        if len(winners) > 0:
-            await ctx.send(f"Congrats to {winners} for winning Cups!")
-        else:
-            await ctx.send("Cups game ended with no winners!")
-        return 1 
+    @commands.command()
+    async def duel(self, ctx: commands.Context):
+        self.console.eject()
+        await self.console.insert(DuelGame, ctx)
+        await self.console.run()
+        self.console.eject()
 
     @commands.command()
     async def vote(self, ctx: commands.Context, arg=""):
