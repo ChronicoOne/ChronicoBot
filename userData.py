@@ -33,6 +33,36 @@ class User:
     
     def __iter__(self):
         return iter(self.data_dict)
+    
+    def addCoins(self, amount):
+        coins = self.getCoins()
+
+        coins += amount
+
+        self["coins"] = str(coins)
+        
+        self.save()
+    
+    def spendCoins(self, amount):
+        
+        coins = self.getCoins()
+
+        coins -= amount
+
+        if coins >= 0:
+            self["coins"] = str(coins)
+            self.save()
+            return True
+        else:
+            return False
+    
+    def getCoins(self):
+        if "coins" in self:
+            coins = int(self["coins"])
+        else:
+            coins = 0
+        
+        return coins
 
     def save(self):
         data_file = open(self.filepath, "w")

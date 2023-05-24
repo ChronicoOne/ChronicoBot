@@ -1,4 +1,5 @@
 import streamGame as sg
+from userData import User
 import pygame 
 from time import sleep
 from random import randrange
@@ -46,6 +47,7 @@ class CupGame(sg.Game):
         self.speed = 5
         self.maxSpeed = 16
         self.countDown = 700
+        self.reward = 15
         self.swapping = False
         self.revealing = False
         self.ending = False
@@ -133,15 +135,20 @@ class CupGame(sg.Game):
 
         for user in self.votes:
             if self.votes[user] == str(self.winnerCup.ID):
-                winners.append("@" + user) 
+                winners.append(user) 
         
         return winners
 
     async def announceWinners(self):
         winners = self.getWinners()
-        winnerString = ", ".join(winners)
+        
+        for winner in winners:
+            user = User(winner)
+            user.addCoins(self.reward)
+
+        winnerString = ", ".join(["@" + winner for winner in winners])
         if len(winners) > 0:
-            await self.console.ctx.send(f"Congrats to {winnerString} for winning Cups!")
+            await self.console.ctx.send(f"Congrats to {winnerString} for winning {self.reward} coins in Cups!")
         else:
             await self.console.ctx.send("Cups game ended with no winners!")
         return 1 

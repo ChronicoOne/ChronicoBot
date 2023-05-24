@@ -4,6 +4,7 @@ access_token_file = open('../tokens/access.token', 'r')
 access_token = access_token_file.read().replace("\n", "") 
 access_token_file.close()
 
+from userData import User
 from streamGame import ChroniConsole 
 import asyncio
 
@@ -32,6 +33,12 @@ class ChronicoBot(commands.Bot):
     async def log(self, ctx: commands.Context):
         await ctx.reply(f'What\'s up loser?')
     
+    @commands.command()
+    async def coins(self, ctx: commands.Context):
+        user = User(ctx.author.name)
+        coins = user.getCoins()
+        await ctx.send(f"@{ctx.author.name} has {coins} coins!")
+
     @commands.command()
     async def cups(self, ctx: commands.Context):
         self.console.eject()
