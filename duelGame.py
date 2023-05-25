@@ -1,5 +1,6 @@
 import streamGame as sg
 import pygame
+import gameUI as gui
 
 class Player:
     def __init__(self, posX, posY):
@@ -46,32 +47,38 @@ class DuelGame(sg.Game):
 
     def drawUI(self, display):
 
-        top_ui_rect_outer = pygame.Rect((5,5), (490, 305))
-        pygame.draw.rect(display, 
-                         self.ui_palette["grey"], 
-                         top_ui_rect_outer,
-                         border_radius=20)
+        top_ui = gui.UIElement((0,0), 
+                                (490, 300),
+                                margin_left="auto",
+                                margin_top=5,
+                                border_width=5,
+                                border_radius=20,
+                                border_color=self.ui_palette["white"],
+                                color=self.ui_palette["black"],
+                                parent=display) 
+
+        top_ui.draw(display)
+
+        bottom_ui = gui.UIElement((0,0), 
+                                (490, 200),
+                                margin_left="auto",
+                                margin_bottom=5,
+                                border_width=5,
+                                border_radius=20,
+                                border_color=self.ui_palette["white"],
+                                color=self.ui_palette["black"],
+                                parent=display) 
         
+        inner_bottom_ui = gui.UIElement((0,0),
+                                         (200, 100),
+                                         margin_left="auto",
+                                         margin_bottom=10,
+                                         border_width=5,
+                                         border_color=self.ui_palette["grey"],
+                                         color = self.ui_palette["white"],
+                                         parent=bottom_ui)
 
-        top_ui_rect_inner = pygame.Rect((10,10), (480, 295))
-        pygame.draw.rect(display, 
-                         self.ui_palette["black"], 
-                         top_ui_rect_inner,
-                         border_radius=20)
-        
-         
-
-        bottom_ui_rect_outer = pygame.Rect((5,305), (490, 190))
-        pygame.draw.rect(display, 
-                         self.ui_palette["grey"], 
-                         bottom_ui_rect_outer,
-                         border_radius=20)
-
-        bottom_ui_rect_inner = pygame.Rect((10,310), (480, 180))
-        pygame.draw.rect(display, 
-                         self.ui_palette["black"], 
-                         bottom_ui_rect_inner,
-                         border_radius=20)
+        bottom_ui.draw(display)
 
         attack_text = self.font.render("Attack", True, self.ui_palette["white"], None)
         
