@@ -42,13 +42,12 @@ class DuelGame(sg.Game):
         self.player1 = Player(100, 150)
         self.player2 = Player(400, 150)
         self.player2.reflectX()
-        self.font = pygame.font.Font('fonts/pixel.ttf', 48)
+        self.font = 'fonts/pixel.ttf'
         self.countDown = 10000
 
     def drawUI(self, display):
 
-        top_ui = gui.UIElement((0,0), 
-                                (490, 300),
+        top_ui = gui.UIElement((490, 300),
                                 margin_left="auto",
                                 margin_top=5,
                                 border_width=5,
@@ -59,8 +58,7 @@ class DuelGame(sg.Game):
 
         top_ui.draw(display)
 
-        bottom_ui = gui.UIElement((0,0), 
-                                (490, 200),
+        bottom_ui = gui.UIElement((490, 200),
                                 margin_left="auto",
                                 margin_bottom=5,
                                 border_width=5,
@@ -69,21 +67,21 @@ class DuelGame(sg.Game):
                                 color=self.ui_palette["black"],
                                 parent=display) 
         
-        inner_bottom_ui = gui.UIElement((0,0),
-                                         (200, 100),
+        inner_bottom_ui = gui.UIElement((200, 100),
                                          margin_left="auto",
-                                         margin_bottom=10,
+                                         margin_bottom="auto",
                                          border_width=5,
+                                         border_radius=20,
                                          border_color=self.ui_palette["grey"],
                                          color = self.ui_palette["white"],
                                          parent=bottom_ui)
+        
 
+        attack_text = gui.UIText("Attack", inner_bottom_ui, self.ui_palette["black"],
+                                 font_file=self.font,
+                                 font_size=48, margin_top="auto", margin_right="auto") 
+        
         bottom_ui.draw(display)
-
-        attack_text = self.font.render("Attack", True, self.ui_palette["white"], None)
-        
-        display.blit(attack_text, (15, 315))  
-        
 
     def draw(self):
         
