@@ -96,10 +96,37 @@ class ChroniConsole:
         self.game.running = True
 
         return await self.play()    
+    
+    def getInput(self):
+        if self.inputQ.isEmpty():
+            return None
+        return self.inputQ.pop()
+
+    async def awaitInput(self, term1, term2=None):
+        countDown = 1200
+        while True:
+            currentInput = self.getInput()
+            if currentInput != None and term1 in currentInput:
+                if term2 != None:
+                    if currentInput[term1] == term2:
+                        return currentInput
+                else:
+                    return currentInput
+
+            countDown -= 1
+            if countDown < 0:
+                return None
+
+            await asyncio.sleep(framewait)
+            
+        return currentInput
 
     def pushInput(self, action):
         self.inputQ.push(action)
 
+    def pushOutput(self, action):
+        self.outputQ.push(action)
+     
     def getOutput(self):
         if self.outputQ.isEmpty():
             return None
@@ -115,10 +142,10 @@ class Game:
         return self.running
     
     def getInput(self):
-        if self.console.inputQ.isEmpty():
-            return None
-        return self.console.inputQ.pop()
+        return self.console.getInput()
 
     def pushOutput(self, action):
-        self.console.outputQ.push(action)
-         
+        self.console.pushOutput(action)
+    
+    async def awaitInput(self, term):
+        return await self.console.awaitInput(term)

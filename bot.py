@@ -48,13 +48,6 @@ class ChronicoBot(commands.Bot):
         self.console.eject()
 
     @commands.command()
-    async def duel(self, ctx: commands.Context):
-        self.console.eject()
-        await self.console.insert(DuelGame, ctx)
-        await self.console.run()
-        self.console.eject()
-
-    @commands.command()
     async def vote(self, ctx: commands.Context, arg=""):
         self.console.pushInput({ctx.author.name: arg})
          
