@@ -45,7 +45,7 @@ class CupGame(sg.Game):
         self.ball = Ball(250)
         self.speed = 5
         self.maxSpeed = 16
-        self.countDown = 700
+        self.countDown = 1000
         self.reward = 15
         self.swapping = False
         self.revealing = False
@@ -134,7 +134,7 @@ class CupGame(sg.Game):
 
         for user in self.votes:
             vote = self.votes[user]
-            if vote.isnumeric():
+            if vote.isdecimal():
                 if int(vote) == self.winnerCup.ID:
                     winners.append(user) 
 

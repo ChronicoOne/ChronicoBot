@@ -64,10 +64,20 @@ class UIElement:
         if isinstance(self.parent, UIElement):
             self.posX += self.parent.posX
             self.posY += self.parent.posY
-            self.parent.append_children([self])
-        
-        self.outer_rect, self.inner_rect = self.init_rects()
+            if self.positioned_right and not self.autoX:
+                self.posX -= self.parent.border_width
+            elif not self.autoX:
+                self.posX += self.parent.border_width
 
+            if self.positioned_bottom and not self.autoY:
+                self.posY -= self.parent.border_width
+            elif not self.autoY:
+                self.posY += self.parent.border_width
+            self.parent.append_children([self])
+            
+        self.outer_rect, self.inner_rect = self.init_rects()
+        
+        
 
     def init_rects(self):
         surface = pygame.Surface((self.width, self.height))
@@ -127,16 +137,6 @@ class UIText(UIElement):
                 margin_right=margin_right, margin_bottom=margin_bottom,
                 parent=parent)
         
-        if self.positioned_right and not self.autoX:
-            self.posX -= self.parent.border_width
-        elif not self.autoX:
-            self.posX += self.parent.border_width
-
-        if self.positioned_bottom and not self.autoY:
-            self.posY -= self.parent.border_width
-        elif not self.autoY:
-            self.posY += self.parent.border_width
-
     def render_text(self):
         return self.font.render(self.text, True, self.text_color, None) 
     

@@ -4,8 +4,8 @@ dir_path = join("..", "userData")
 
 class User:
     def __init__(self, name):
-        self.name = name
-        self.filepath = join(dir_path, name + ".data")
+        self.name = name.lower()
+        self.filepath = join(dir_path, self.name + ".data")
         self.data_dict = {}
         self.init_file()
 

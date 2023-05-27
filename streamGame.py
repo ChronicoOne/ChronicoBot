@@ -102,13 +102,13 @@ class ChroniConsole:
             return None
         return self.inputQ.pop()
 
-    async def awaitInput(self, term1, term2=None):
-        countDown = 1200
+    async def awaitInput(self, term1, term2=None, waitTime=1200):
+        countDown = waitTime
         while True:
             currentInput = self.getInput()
             if currentInput != None and term1 in currentInput:
                 if term2 != None:
-                    if currentInput[term1] == term2:
+                    if currentInput[term1].upper() == term2.upper():
                         return currentInput
                 else:
                     return currentInput
